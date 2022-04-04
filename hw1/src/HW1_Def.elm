@@ -14,7 +14,6 @@ filter = List.filter
 --
 type alias Bag a = List (a, Int)
 
-
 -- Exercise 2
 --
 type alias Node  = Int
