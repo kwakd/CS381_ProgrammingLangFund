@@ -41,7 +41,7 @@ ntv3 = [7,3,8,7,3,2,7,5]
 
 -- Exercise 1
 --
--- (a)Define the function ins that inserts an element into a multiset
+-- (a)Define the function ins that inserts an element into a multiset 
 ins : a -> Bag a -> Bag a
 ins elem bagF = case bagF of
     [] -> [(elem, 1)]
@@ -109,15 +109,15 @@ size b = case b of
 --
 -- (a) Define the function nodes : Graph -> List Node that computes the list of nodes
 -- contained in a given graph. For example, nodes g = [1,2,3,4]
-tupleMember : a -> List (a,b) -> Bool
-tupleMember i l = case l of 
-    [] -> False
-    (x,y)::ys -> i==x || tupleMember i ys
+-- tupleMember : a -> List (a,b) -> Bool
+-- tupleMember i l = case l of 
+--     [] -> False
+--     (x,y)::ys -> i==x || tupleMember i ys
 
 nodes : Graph -> List Node
 nodes r = case r of
     [] -> []
-    (x,y)::xs -> if tupleMember x xs then nodes xs else x::nodes xs
+    (x,y)::xs -> asSet(x::y::nodes xs)
 -- nodes g
 
 -- (b) Define the function suc : Node -> Graph -> List Node that computes the list of
