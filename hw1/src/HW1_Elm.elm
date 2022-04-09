@@ -117,8 +117,8 @@ tupleMember i l = case l of
 nodes : Graph -> List Node
 nodes r = case r of
     [] -> []
-    (x,y)::xs -> if x==
-
+    (x,y)::xs -> if tupleMember x xs then nodes xs else x::nodes xs
+-- nodes g
 
 -- (b) Define the function suc : Node -> Graph -> List Node that computes the list of
 -- sucessors for a node in a given graph. For example, suc 2 g = [3,4], suc 4 g = [], and
