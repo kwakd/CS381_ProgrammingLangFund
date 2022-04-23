@@ -1,5 +1,5 @@
 module HW2_Syntax exposing (..)
-
+filter = List.filter
 ----------------------------------------
 -- CS 381 HW1 Contributors
 ----------------------------------------
