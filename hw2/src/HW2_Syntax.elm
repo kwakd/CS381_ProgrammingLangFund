@@ -141,7 +141,7 @@ vector = Def "vector" (IPa[5](SPa "")) (Seq(Seq(Pen Down)(MoveTo (IPo 5) (IPo 6)
         rhs2_1 : RHS
         rhs2_1 = [sym5]
         rhs2_2 : RHS
-        rhs2_2 = [sym_2, sym10,  sym_2]
+        rhs2_2 = [sym6, sym_1, sym7, sym8, sym_2, sym9]
         rhs2_3 : RHS
         rhs2_3 = [sym_2, sym10,  sym_2]
 
