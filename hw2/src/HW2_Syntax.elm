@@ -130,14 +130,13 @@ vector = Def "vector" (IPa[5](SPa "")) (Seq(Seq(Pen Down)(MoveTo (IPo 5) (IPo 6)
         sym_2 : Symbol
         sym_2 = NT "stmt"
 
-        sym22 : Symbol
-        sym22 = T "d"
         rhs1_1 : RHS
         rhs1_1 = [sym1] 
-
         rhs1_2 : RHS
         rhs1_2 = [sym2, sym_1]
-
+        rhs1_3 : RHS
+        rhs1_3 = [sym3, sym_1, sym4]
+        
         rhs2_1 : RHS
         rhs2_1 = [sym5]
         rhs2_2 : RHS
@@ -176,4 +175,37 @@ vector = Def "vector" (IPa[5](SPa "")) (Seq(Seq(Pen Down)(MoveTo (IPo 5) (IPo 6)
 --
 --          > terminals imp
 --          ["T","not","(",")","skip","while","do","{","}",";"]
+
+        terminals : Grammar ->List Term 
+        terminals t = case t of
+                        [] -> []
+                        x::xs -> case x of
+                                Eq _ [] -> terminals xs
+                                Eq _ (y::ys) -> toTerm(remove (getTerminals (y::ys)))++terminals xs
+
+
+
+
+        getTerminals : List RHS -> RHS
+        getTerminals gt = case gt of
+                        [] -> []
+                        (z::zs) -> z++getTerminals zs 
+
+
+        remove : RHS -> List Symbol
+        remove rm = case rm of
+                    [] -> []
+                    x::xs -> filter isTerminal (x::xs)
+
+        toTerm : List Symbol -> List Term 
+        toTerm smth = case smth of
+            [] -> []
+            f::fs -> case f of 
+                    T ter -> ter::toTerm fs
+                    NT _ -> []
+
+        isTerminal : Symbol -> Bool
+        isTerminal sy = case sy of
+                    T _  -> True
+                    NT _ -> False
 -- *****************************************************************
