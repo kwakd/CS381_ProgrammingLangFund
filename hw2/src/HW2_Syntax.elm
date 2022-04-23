@@ -87,8 +87,14 @@ vector = Def "vector" (IPa[5](SPa "")) (Seq(Seq(Pen Down)(MoveTo (IPo 5) (IPo 6)
 -- *****************************************************************
 -- (a)  Give Elm type (alias) definitions for the types Grammar, Prod, RHS, and Symbol to represent the abstract syntax
 -- for the above language. As part of your definitions, use the following type aliases NonTerm and Term.
---     type alias NonTerm = String
---     type alias Term = String
+        type alias NonTerm = String
+        type alias Term = String
+        type alias NonTerm = String
+        type alias Term = String
+        type Symbol = T Term | NT NonTerm
+        type alias RHS = List Symbol
+        type Prod = Eq (NonTerm) (List RHS)
+        type alias Grammar = List Prod 
 -- *****************************************************************
 
 -- *****************************************************************
@@ -98,6 +104,59 @@ vector = Def "vector" (IPa[5](SPa "")) (Seq(Seq(Pen Down)(MoveTo (IPo 5) (IPo 6)
 -- Represent this grammar by an Elm value of type Grammar defined in part(a)
 --          imp : Grammar
 --          imp = ...
+
+        sym1 : Symbol
+        sym1 = T "T"
+        sym2 : Symbol
+        sym2 = T "not"
+        sym3 : Symbol
+        sym3 = T "("
+        sym4 : Symbol
+        sym4 = T ")"
+        sym5 : Symbol
+        sym5 = T "skip"
+        sym6 : Symbol
+        sym6 = T "while" 
+        sym7: Symbol
+        sym7 = T "do"
+        sym8 : Symbol
+        sym8 = T "{"
+        sym9 : Symbol
+        sym9 = T "}"
+        sym10 : Symbol
+        sym10 = T ";" 
+        sym_1 : Symbol
+        sym_1 = NT "cond"--,"stmt"
+        sym_2 : Symbol
+        sym_2 = NT "stmt"
+
+        sym22 : Symbol
+        sym22 = T "d"
+        rhs1_1 : RHS
+        rhs1_1 = [sym1] 
+
+        rhs1_2 : RHS
+        rhs1_2 = [sym2, sym_1]
+
+        rhs2_1 : RHS
+        rhs2_1 = [sym5]
+        rhs2_2 : RHS
+        rhs2_2 = [sym_2, sym10,  sym_2]
+        rhs2_3 : RHS
+        rhs2_3 = [sym_2, sym10,  sym_2]
+
+        cnd : NonTerm
+        cnd = "cond"
+        smt : NonTerm
+        smt = "stmt"
+        prod1 : Prod
+        prod1 = Eq cnd [rhs1_1, rhs1_2]
+
+        prod2 : Prod
+        prod2 = Eq smt [rhs2_1, rhs2_2, rhs2_3]
+
+        imp : Grammar
+        imp = [prod1, prod2]
 -- *****************************************************************
 
 -- *****************************************************************
@@ -107,6 +166,13 @@ vector = Def "vector" (IPa[5](SPa "")) (Seq(Seq(Pen Down)(MoveTo (IPo 5) (IPo 6)
 -- For the value imp defined in part(b), the functions would produce the following results
 --          > nonterminals imp
 --          ["cond", "stmt"]
+
+        nonterminals : Grammar -> List NonTerm
+        nonterminals nt = case nt of
+                        [] -> []
+                        x::xs -> case x of
+                                Eq ni [] -> [ni]
+                                Eq no (_::_) -> no::nonterminals xs
 --
 --          > terminals imp
 --          ["T","not","(",")","skip","while","do","{","}",";"]
