@@ -19,13 +19,41 @@ module HW2_Syntax exposing (..)
 --      |  call name (vals)
 --      |  cmd;cmd
 --
--- (a)Define the abstract syntax for Mini Logo as Elm types
+-- mode ::= up  | down
+-- pos  ::= num | name
+-- pars ::= num, pars | name
+-- vals ::= num, vals | num
 
+-- (a) Define the abstract syntax for Mini Logo as Elm types
+type Cmd = Pen Mode
+        | MoveTo Pos Pos
+        | Def String Pars Cmd
+        | Call String Vals
+        | Seq Cmd Cmd
+
+type Mode = Up | Down 
+type Pos = Int | String
+type Pars = (String, Pars) | String
+type Vals = (Int, Vals) | Int
 
 
 -- (b) Write a Mini Logo macro vector that draws a line from a given position (x1, y1) to a given position (x2, y2) 
 -- and represent the macro in abstract syntax, that is, as an elm data type value
+-- 
+--      Note: What you should actually do is write a Mini Log program that defines a vector macro. Using concrete syntax, the answer would have the following form
+--              def vector (...) ...
+--
+--      It might be a good idea to write the solution in concrete syntax first. But then you should write the same Mini Logo program in abstract syntax, that is,
+--      you should define a value built with Elm constructors that starts as follows (assuming Def is the construct that represents the def production in the Elm type used for cmd)
+--             vector = Def "vector" ... ...
+--
+--      You only need to submit this Elm definition of the value vector as part of your Elm program. (If you like, you can include the concret syntax as a comment, but it is not required)
 
+-- Concrete Syntax
+-- def vector (x1, y1, x2, y2) (pen down, MoveTo(x1,y1), MoveTo(x2,y2), pen up)
+
+-- Abstract Syntax
+-- vector = Def "vector" x1,y1,x2,y2 
 
 -- (c) Define an Elm function steps : Int -> Cmd that constructs a Mini Logo program which draws a star of n steps
 -- Your solution should not use the macro vector
