@@ -159,7 +159,7 @@ cnd = "cond"
 smt : NonTerm
 smt = "stmt"
 prod1 : Prod
-prod1 = Eq cnd [rhs1_1, rhs1_2]
+prod1 = Eq cnd [rhs1_1, rhs1_2, rhs1_3]
 
 prod2 : Prod
 prod2 = Eq smt [rhs2_1, rhs2_2, rhs2_3]
