@@ -26,16 +26,19 @@ filter = List.filter
 
 -- *****************************************************************
 -- (a) Define the abstract syntax for Mini Logo as Elm types
+type alias Name = String
+type alias Num = Int
+
 type Cmd = Pen Mode
         | MoveTo Pos Pos
-        | Def String Pars Cmd
-        | Call String Vals
+        | Def Name Pars Cmd
+        | Call Name Vals
         | Seq Cmd Cmd
 
 type Mode = Up | Down 
-type Pos = IPo Int | SPo String
-type Pars = IPa (List Int) Pars | SPa String
-type Vals = IV1 (List Int) Vals | IV2 Int
+type Pos = PosNum Num | PosName Name
+type Pars = ParsName1 Name Pars | ParsName2 Name
+type Vals = ValsNum1 Num Vals | ValsNum2 Num
 
 -- *****************************************************************
 
@@ -52,21 +55,27 @@ type Vals = IV1 (List Int) Vals | IV2 Int
 --
 --      You only need to submit this Elm definition of the value vector as part of your Elm program. (If you like, you can include the concret syntax as a comment, but it is not required)
 
--- Concrete Syntax
--- def vector (x1, y1, x2, y2) (pen down, MoveTo(x1,y1), MoveTo(x2,y2), pen up)
-
 -- Abstract Syntax
-vector = Def "vector" (IPa[5](SPa "")) (Seq(Seq(Pen Down)(MoveTo (IPo 5) (IPo 6)))(Seq(Pen Down)(MoveTo (IPo 5) (IPo 6))))
+vector = Def "vector" (ParsName1 "x1"(ParsName1 "y1"(ParsName1 "x2"(ParsName2 "y2")))) (Seq(Seq(Pen Up)(MoveTo (PosName "x1") (PosName "y1")))(Seq(Pen Down)(MoveTo (PosName "x2") (PosName "y2"))))
 
 -- *****************************************************************
 
 -- *****************************************************************
--- (c) Define an Elm function steps : Int -> Cmd that constructs a Mini Logo program which draws a star of n steps
+-- (c) Define an Elm function steps : Int -> Cmd that constructs a Mini Logo program which draws a stair of n steps
 -- Your solution should not use the macro vector
---steps : Int -> Cmd
---steps userInput = case userInput of
- --   0 -> _ 
 
+steps : Int -> Cmd
+steps userInput =
+        case userInput of
+                0 -> Call "vector" (ValsNum1 0(ValsNum1 0(ValsNum1 0(ValsNum2 0))))
+                1 -> Seq (Seq (Call "vector" (ValsNum1 0(ValsNum1 0(ValsNum1 0(ValsNum2 0))))) (Call "vector" (ValsNum1 0(ValsNum1 0(ValsNum1 0(ValsNum2 1)))))) (Call "vector" (ValsNum1 0(ValsNum1 1(ValsNum1 1(ValsNum2 1))))) 
+                _ -> Seq (steps(userInput-1))(Seq((Call "vector" (ValsNum1 (userInput-1)(ValsNum1 (userInput-1)(ValsNum1 (userInput-1)(ValsNum2 userInput))))))(Call "vector" (ValsNum1 (userInput-1)(ValsNum1 userInput(ValsNum1 userInput(ValsNum2 userInput))))))
+
+
+--        if userInput == 0 then 
+--                MoveTo (PosNum userInput)(PosNum userInput)
+--        else
+--                MoveTo (PosNum (steps(userInput-1)))(PosNum (userInput-1))
 
 
 -- *****************************************************************
