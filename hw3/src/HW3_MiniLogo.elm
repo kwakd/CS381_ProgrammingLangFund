@@ -7,6 +7,7 @@ module HW3_MiniLogo exposing (..)
 ----------------------------------------
 -- Fatimah Alsalman  
 -- Travis Hudson  
+-- Manju Kuah
 -- David Kwak
 ----------------------------------------
 

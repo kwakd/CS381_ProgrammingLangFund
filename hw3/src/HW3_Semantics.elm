@@ -6,6 +6,7 @@ module HW3_Semantics exposing (..)
 ----------------------------------------
 -- Fatimah Alsalman  
 -- Travis Hudson 
+-- Manju Kuah
 -- David Kwak
 ----------------------------------------
 
