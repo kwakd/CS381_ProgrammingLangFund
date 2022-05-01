@@ -30,9 +30,9 @@ svgLine ((a,b),(c,d)) = line
     [ x1 (xPt a), y1 (yPt b), x2 (xPt c), y2 (yPt d)
     , stroke "green", strokeWidth "4", strokeLinecap "round"] []
 
--- --main : Html msg
--- main = svg [viewBox "0 0 400 400", width "800", height "800"]
---            (List.map svgLine logoResult)
+main : Html msg
+main = svg [viewBox "0 0 400 400", width "800", height "800"]
+            (List.map svgLine logoResult)
 
 ----- BEGIN HW3 solution
 
@@ -72,26 +72,31 @@ type alias Lines = List Line
 --              semCmd : Cmd -> State -> (State,Lines)
 --
 semCmd : Cmd -> State -> (State,Lines)
-semCmd userCmd userState = 
-    case userCmd of 
-        Pen Up ->  ((Up, (5,5)), [] )
-        Pen Down -> ((Up, (5,6)), [] )
-        MoveTo (e1, e2) -> ((Up, (5,7)), [] )
-        _ -> ((Up, (5,8)), [] )
+semCmd c(m,(x,y)) = 
+    case c of 
+        Pen Up   ->  ((Up, (x,y)), [] )
+        Pen Down -> ((Down, (x,y)), [] )
+        MoveTo (e1, e2) -> case (m,(x,y)) of
+            (Up, (f1, f2)) -> ((Up, (f1,f2)), [])
+            (Down, (f1, f2)) -> ((Down, (f1,f2)), [] )
+        Seq c1 c2 -> let state2 = (semCmd c1 (m,(x,y))) in semCmd c2 (Tuple.first(state2))
+        --_ -> ((m,(x,y)), [])
        -- MoveTo (e1, e2)  ->  ((Down, (5,5)), [] )
 
--- semCmd (Seq (Pen Up)(MoveTo (0,0))) ((Pen Up),(4,5)) -> (((Pen Up), (4,5), [(4,5)(4,5)])
+-- semCmd (Seq (Pen Up)(MoveTo (0,0))) (Up,(4,5)) -> (((Pen Up), (4,5), [(4,5)(4,5)])
 
 -- This function defines for each Cmd how it modifies the current drawing state and what lines it produces. After that
 -- define the function lines with the following type.
 --              lines : Cmd -> Lines
 --
--- lines : Cmd -> Lines
--- lines ...
+lines : Cmd -> Lines
+lines c = Tuple.second(semCmd(c) (Up,(0,0)))
+
+
 -- lines (Seq (Pen Up)(MoveTo (0,0))) -> [List Line]
 
 -- The function lines should call semCmd. The initial state is defined to have the pen up and the current drawing
 -- position at (0,0).
 
---logoResult : Lines
---logoResult = lines (Seq (Seq (Seq (Pen Up) (Seq (MoveTo (0,0)) (Seq (Pen Down) (MoveTo (0,1))))) (MoveTo (1,1))) (Seq (MoveTo (1,2)) (MoveTo (2,2))))
+logoResult : Lines
+logoResult = lines (Seq (Seq (Seq (Pen Up) (Seq (MoveTo (0,0)) (Seq (Pen Down) (MoveTo (0,1))))) (MoveTo (1,1))) (Seq (MoveTo (1,2)) (MoveTo (2,2))))
