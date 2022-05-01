@@ -1,4 +1,4 @@
-module HW3_Semantics exposing (..)
+module HW3_SemanticsTest exposing (..)
 ----------------------------------------
 -- CS 381 HW3 Contributors
 ----------------------------------------
@@ -6,6 +6,7 @@ module HW3_Semantics exposing (..)
 ----------------------------------------
 -- Fatimah Alsalman  
 -- Travis Hudson 
+-- Manju Kuah   
 -- David Kwak
 ----------------------------------------
 
@@ -44,11 +45,11 @@ type alias Stack = List Int
 --              type (alias) D = ...
 --              semProg : Prog -> D
 --
-type alias D = Stack -> Stack
-semProg : Prog -> D
-semProg prog s = case prog of
-    [] -> s
-    x::xs -> semProg xs (semOp x s)
+type alias D = Maybe Stack -> Maybe Stack
+-- semProg : Prog -> D
+-- semProg prog s = case prog of
+--     [] -> s
+--     x::xs -> semProg xs (semOp x s)
     --_ -> Nothing
 
 -- semProg [LD 4] [5]
@@ -64,38 +65,39 @@ semProg prog s = case prog of
 --
 
 -- semProg [LD 3,DUP,ADD,DUP,MULT] [5]
--- [36,5]
 
 -- As support for the definition of semProg you should define an auxiliary function semCmd for the semantics of individual
 -- operations, which has the following type.
 --              semOp : Op -> D
 --
-semOp : Op -> D
-semOp op s = case op of
-    LD i -> i :: s
+semOp : Op -> D 
+semOp op s = case Just op of
+    Just (LD i) -> Just([i] :: [s])
 --          semOp (LD 4) [5]
---          [4,5]
-    ADD  -> case s of
-        []    -> []
-        x::y::xs -> List.sum[x, y] :: xs
-        _ ->  []
+--          Just [4,5]
+    Just ADD  -> case s of
+        []    -> Nothing
+        x::y::xs -> Just(List.sum[x, y] :: xs)
+        _ ->  Just s
 --          semOp ADD [5,6]
 --          [11]
 --          semOp ADD [5,6,7]
 --          [11,7]
-    MULT  -> case s of
-        []    -> []
-        x::y::xs -> List.product[x, y] :: xs
-        _ -> []
+    Just MULT  -> case s of
+        []    -> Nothing
+        x::y::xs -> Just(List.product[x, y] :: xs)
+        _ -> Just s
 --          semOp MULT [5,6]
 --          [30]
 --          semOp MULT [5,6,7]
 --          [30,7]
-    DUP  -> case s of
-        []    -> []
-        x::xs -> [x, x] ++ xs
+    Just DUP  -> case s of
+        []    -> Nothing
+        x::xs -> Just ([x, x] ++ xs)
 --          semOp DUP [5,6]
 --          [5,5,6]
+
+
 
 -- Hint: Test your definitions with the stack programs [LD 3,DUP,ADD,DUP,MULT] and [LD 3,ADD] and the empty stack
 -- [] as inputs.
