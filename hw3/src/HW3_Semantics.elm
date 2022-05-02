@@ -124,6 +124,30 @@ main : Html msg
 main = svg [viewBox "0 0 400 400", width "800", height "800"]
            (List.map svgLine logoResult)
 
+-- Q2
+import Html exposing (Html)
+import Svg exposing (..)
+import Svg.Attributes exposing (..)
+
+-- Elm/SVG auxiliary definitions
+--
+scale = 30
+
+xPt : Int -> String
+xPt i = String.fromInt (scale+i*scale)
+
+yPt : Int -> String
+yPt i = String.fromInt (398-i*scale)
+
+svgLine : Line -> Svg a
+svgLine ((a,b),(c,d)) = line
+    [ x1 (xPt a), y1 (yPt b), x2 (xPt c), y2 (yPt d)
+    , stroke "green", strokeWidth "4", strokeLinecap "round"] []
+
+main : Html msg
+main = svg [viewBox "0 0 400 400", width "800", height "800"]
+           (List.map svgLine logoResult)
+
 ----- BEGIN HW3 solution
 
 type alias Point = (Int,Int)
@@ -142,11 +166,6 @@ head = List.head
 
 semCmd : Cmd -> State -> (State,Lines)
 semCmd c (m, (x,y)) = case c of 
-           {-- Pen Up -> ((Up, (x,y)), [])
-            Pen Down -> ((Down, (x,y)), [])
-            MoveTo (j, k) -> ((m, (j,k)), [((x,y),(j,k))])
-            --Seq c1 c2 -> 
-            --}
             Pen Up   ->  ((Up, (x,y)), [] )
             Pen Down -> ((Down, (x,y)), [] )
             MoveTo (e1, e2) -> case (m,(x,y)) of
@@ -156,25 +175,16 @@ semCmd c (m, (x,y)) = case c of
                             (n1, m1) = (semCmd c1 (m,(x,y)))
                         in 
                         let (n2, m2) = semCmd c2 n1 in (n2, m1++m2 )
-            {--Seq c1 c2 -> let 
-                            state2 = (semCmd c1 (m,(x,y)))
-                        in 
-                        semCmd c2 ((Tuple.first( state2)))--}
+
 
 lines : Cmd -> Lines
 lines c = case c of
-        Pen _ -> []
-        MoveTo (_, _) -> []
-        Seq c1 c2 -> let (_, n1) = semCmd (Seq c1 c2) (Up, (0,0)) in n1
-       -- cmd -> return_points(semCmd cmd (Up, (0,0)))::[]
-       --cmd -> return_points(semCmd cmd (Up, (0,0)))++[]
+       cmd -> return_points(semCmd cmd (Up, (0,0)))++[]
 
 return_points : (State, Lines) -> Lines--Line
 return_points ((m , (x,y)), l) = case l of
                 ls -> ls
-{--return_points ((m , (x,y)), l) = case (x,y) of 
-        (j ,k) ->((x,y),(j,k))--}
+
 
 logoResult : Lines
 logoResult = lines (Seq (Seq (Seq (Pen Up) (Seq (MoveTo (0,0)) (Seq (Pen Down) (MoveTo (0,1))))) (MoveTo (1,1))) (Seq (MoveTo (1,2)) (MoveTo (2,2))))
---logoResult = [((0,0),(0,1)), ((0,1),(1,1)), ((1,1),(1,2)), ((1,2),(2,2))]
