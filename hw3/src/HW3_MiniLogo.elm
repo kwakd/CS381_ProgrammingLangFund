@@ -11,7 +11,6 @@ module HW3_MiniLogo exposing (..)
 -- David Kwak
 ----------------------------------------
 
-
 import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
@@ -33,20 +32,10 @@ svgLine ((a,b),(c,d)) = line
 
 main : Html msg
 main = svg [viewBox "0 0 400 400", width "800", height "800"]
-            (List.map svgLine logoResult)
+           (List.map svgLine logoResult)
 
 ----- BEGIN HW3 solution
 
--- Exercise 2. Mini Logo
---
--- Consider the simplified version of Mini Logo (without macros), defined by the following abstract syntax.
---              type alias Point = (Int,Int)
---              type Mode = Up | Down
---
---              type Cmd = Pen Mode
---                      | MoveTo Point
---                      | Seq Cmd Cmd
---
 type alias Point = (Int,Int)
 
 type Cmd = Pen Mode
@@ -55,53 +44,47 @@ type Cmd = Pen Mode
 
 type Mode = Up | Down
 
--- The semantics of a Mini Logo program is a set of drawn lines. However, for the definition of the semantics a "drawing state"
--- must be maintained that keeps track of the current position of the pen and the pen's status (Up or Down). This state should
--- be represented by values of the following type.
---              type alias State = (Mode,Point)
---
-type alias State = (Mode,Point)
-
--- The semantic domain representing a set of drawn lines is represented by the type Lines.
---              type alias Line = (Point,Point)
---              type alias Lines = List Line
---
 type alias Line = (Point,Point)
 type alias Lines = List Line
+type alias State = (Mode,Point)
 
--- Define the semantics of Mini Logo via two Elm functions. First, define a function semCmd that has the following type.
---              semCmd : Cmd -> State -> (State,Lines)
---
+head = List.head
+
 semCmd : Cmd -> State -> (State,Lines)
-semCmd c(m,(x,y)) = 
-    case c of 
-        Pen Up   ->  ((Up, (x,y)), [] )
-        Pen Down -> ((Down, (x,y)), [] )
-        MoveTo (e1, e2) -> case (m,(x,y)) of
-            (Up, (f1, f2)) -> ((Up, (f1,f2)), [])
-            (Down, (f1, f2)) -> ((Down, (e1,e2)), ((f1,f2),(e1,e2))::[] )
-        Seq c1 c2 -> let state2 = (semCmd c1 (m,(x,y))) in semCmd c2 (Tuple.first(state2))
-        --_ -> ((m,(x,y)), [])
-       -- MoveTo (e1, e2)  ->  ((Down, (5,5)), [] )
+semCmd c (m, (x,y)) = case c of 
+           {-- Pen Up -> ((Up, (x,y)), [])
+            Pen Down -> ((Down, (x,y)), [])
+            MoveTo (j, k) -> ((m, (j,k)), [((x,y),(j,k))])
+            --Seq c1 c2 -> 
+            --}
+            Pen Up   ->  ((Up, (x,y)), [] )
+            Pen Down -> ((Down, (x,y)), [] )
+            MoveTo (e1, e2) -> case (m,(x,y)) of
+                (Up, (f1, f2)) -> ((Up, (e1,e2)), [])
+                (Down, (f1, f2)) -> ((Down, (e1,e2)), [ ((f1,f2),(e1,e2)) ] ++ [])
+            Seq c1 c2 -> let 
+                            (n1, m1) = (semCmd c1 (m,(x,y)))
+                        in 
+                        let (n2, m2) = semCmd c2 n1 in (n2, m1++m2 )
+            {--Seq c1 c2 -> let 
+                            state2 = (semCmd c1 (m,(x,y)))
+                        in 
+                        semCmd c2 ((Tuple.first( state2)))--}
 
--- semCmd (Seq (Pen Up)(MoveTo (0,0))) (Up,(4,5)) -> (((Pen Up), (4,5), [(4,5)(4,5)])
-
--- This function defines for each Cmd how it modifies the current drawing state and what lines it produces. After that
--- define the function lines with the following type.
---              lines : Cmd -> Lines
---
 lines : Cmd -> Lines
 lines c = case c of
-        cmd -> return_points(semCmd cmd (Up, (0,0)))::[]
-        
-return_points : (State, Lines) -> Line
-return_points ((m , (x,y)), l) = case (x,y) of 
-        (j ,k) ->((x,y),(j,k))
+        Pen _ -> []
+        MoveTo (_, _) -> []
+        Seq c1 c2 -> let (_, n1) = semCmd (Seq c1 c2) (Up, (0,0)) in n1
+       -- cmd -> return_points(semCmd cmd (Up, (0,0)))::[]
+       --cmd -> return_points(semCmd cmd (Up, (0,0)))++[]
 
--- lines (Seq (Pen Up)(MoveTo (0,0))) -> [List Line]
-
--- The function lines should call semCmd. The initial state is defined to have the pen up and the current drawing
--- position at (0,0).
+return_points : (State, Lines) -> Lines--Line
+return_points ((m , (x,y)), l) = case l of
+                ls -> ls
+{--return_points ((m , (x,y)), l) = case (x,y) of 
+        (j ,k) ->((x,y),(j,k))--}
 
 logoResult : Lines
 logoResult = lines (Seq (Seq (Seq (Pen Up) (Seq (MoveTo (0,0)) (Seq (Pen Down) (MoveTo (0,1))))) (MoveTo (1,1))) (Seq (MoveTo (1,2)) (MoveTo (2,2))))
+--logoResult = [((0,0),(0,1)), ((0,1),(1,1)), ((1,1),(1,2)), ((1,2),(2,2))]
