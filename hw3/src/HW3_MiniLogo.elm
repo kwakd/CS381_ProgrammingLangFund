@@ -79,7 +79,7 @@ semCmd c(m,(x,y)) =
         Pen Down -> ((Down, (x,y)), [] )
         MoveTo (e1, e2) -> case (m,(x,y)) of
             (Up, (f1, f2)) -> ((Up, (f1,f2)), [])
-            (Down, (f1, f2)) -> ((Down, (f1,f2)), [] )
+            (Down, (f1, f2)) -> ((Down, (e1,e2)), ((f1,f2),(e1,e2))::[] )
         Seq c1 c2 -> let state2 = (semCmd c1 (m,(x,y))) in semCmd c2 (Tuple.first(state2))
         --_ -> ((m,(x,y)), [])
        -- MoveTo (e1, e2)  ->  ((Down, (5,5)), [] )
@@ -91,8 +91,12 @@ semCmd c(m,(x,y)) =
 --              lines : Cmd -> Lines
 --
 lines : Cmd -> Lines
-lines c = Tuple.second(semCmd(c) (Up,(0,0)))
-
+lines c = case c of
+        cmd -> return_points(semCmd cmd (Up, (0,0)))::[]
+        
+return_points : (State, Lines) -> Line
+return_points ((m , (x,y)), l) = case (x,y) of 
+        (j ,k) ->((x,y),(j,k))
 
 -- lines (Seq (Pen Up)(MoveTo (0,0))) -> [List Line]
 
