@@ -155,9 +155,7 @@ semCmd c (m, (x,y)) = case c of
 
 lines : Cmd -> Lines
 lines c = case c of
-        Pen _ -> []
-        MoveTo (_, _) -> []
-        Seq c1 c2 -> let (_, n1) = semCmd (Seq c1 c2) (Up, (0,0)) in n1
+       cmd -> return_points(semCmd cmd (Up, (0,0)))++[]
 
 
 return_points : (State, Lines) -> Lines--Line
