@@ -23,6 +23,47 @@ module HW4_Types exposing (..)
 --
 type Op = LD Int | ADD | MULT | DUP | DEC | SWAP | POP Int
 type alias Prog = List Op
+type alias Stack = List Int
+
+type alias D = Stack -> Stack
+
+semProg : Prog -> D
+semProg prog s = case prog of
+    [] -> s
+    x::xs -> semProg xs (semOp x s)
+
+semOp : Op -> D
+semOp op s = case op of
+    LD i -> i :: s
+--          semOp (LD 4) [5]
+--          [4,5]
+    ADD  -> case s of
+        x::y::xs -> List.sum[x, y] :: xs
+        _ ->  []
+--          semOp ADD [5,6]
+--          [11]
+--          semOp ADD [5,6,7]
+--          [11,7]
+    MULT  -> case s of
+        x::y::xs -> List.product[x, y] :: xs
+        _ -> []
+--          semOp MULT [5,6]
+--          [30]
+--          semOp MULT [5,6,7]
+--          [30,7]
+    DUP  -> case s of
+        x::xs -> [x, x] ++ xs
+        _ -> []
+
+    DEC  -> case s of
+        x::xs -> [x-1] ++ xs
+        _ -> []
+
+    SWAP  -> case s of
+        x::y::xs -> [y, x] ++ xs
+        _ -> []
+
+    POP i -> List.drop i s
 
 -- Even though the stack carries only integers, a type system can be defined for this language that assigns ranks to stacks
 -- and operations and ensures that a program does not result in a rank mismatch.
@@ -41,10 +82,17 @@ type alias Rank = Int
 type alias OpRank = (Int, Int)
 
 --  First, define a function rankC that maps each stack operation to its rank.
---              rankOp : Op -> OpRank
+--              rankC : Op -> OpRank
 --
-rankOp : Op -> OpRank
-rankOp op = 
+rankC : Op -> OpRank
+rankC op = case op of
+    LD i -> (0,1)
+    ADD -> (2,1)
+    MULT -> (2,1)
+    DUP -> (1,2)
+    DEC -> (1,1)
+    SWAP -> (2,2)
+    POP i -> (i, 0)
 
 -- Then define a function rankP that computes the rank of a program. The Maybe data type is used to capture rank
 -- errors, that is, a program that contains a rank error should be mapped to Nothing whereas ranks of other programs
@@ -53,6 +101,24 @@ rankOp op =
 --
 -- Hint. Maybe define an auxiliary function rank : Prog -> Rank -> Maybe Rank and define rankP using rank.
 --
+rank : Prog -> Rank -> Maybe Rank
+rank prog r = case prog of
+    [] -> if r >= 0 then Just r
+        else Nothing
+    x::xs -> 
+        let
+            (subs, adds) = rankC x
+            under = r - subs
+        in 
+            if under >= 0 then rank xs (under + adds)
+            else Nothing
+
+    --_ -> Nothing
+
+rankP : Prog -> Maybe Rank
+rankP xs = rank xs 0
+
+
 -- b)  Following the example of the function evalTC (defined on slide 33 of the type system slides), define a function
 -- semTC for evaluating stack programs that first calls the function rankP to check whether the stack program is
 -- type correct and evaluates the program only in that case. For performing the actual evaluation semTC calls the
@@ -61,4 +127,4 @@ rankOp op =
 -- semProg, and why is it safe to use this new type? (You do not have to give a new definition of the function; you
 -- can use the definition semOp _ _ = Debug.todo "Error" to get your file to compile.)
 
-
+-- Exercise 2. A Rank-Based Type Systems for the Stack Language
