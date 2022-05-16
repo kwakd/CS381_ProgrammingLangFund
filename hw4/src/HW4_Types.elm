@@ -147,3 +147,48 @@ bTest11 = [POP 1] -- NOTHING
 bTest12 = [DUP] -- NOTHING
 
 -- Exercise 2. A Rank-Based Type Systems for the Stack Language
+-- Consider the following language for building shapes out of unit squares through horizontal and vertical composition.
+--          s ∈ shape ::=  | s<s | s^s
+-- In this grammar,  denotes a unit square (or pixel) of width and height 1. The expression s1<s2 puts s2 next to s1 (on
+-- the right), which means to join s2’s left border with s1’s right border while aligning their bottom sides. The expression
+-- s3^s4 puts s3 above s4, which means to join s3’s lower border with s4’s upper border while aligning their left sides.
+-- The borders of any shape are given by the smallest enclosing rectangle, which is also called the shape’s bounding
+-- box; this means the lower border is given by the lowest contained square(s), the left border is given by the leftmost
+-- square(s), and so on. The effect of the operations is illustrated below.
+--
+-- Here, shape 4 is given by , the shapes 1 and 3 are given by <, and shape 2 is given by ^(^). The left shape is
+-- given, for example, by (<)<(^(^)), and the right shape is given by (<)^. We can observe that in many
+-- cases the same shape can be built in different ways. For example, shape 2 can also be given by (^)^.
+--
+-- The width and height of a shape’s bounding box can be considered its type. For example, the type of shapes 1
+-- and 3 are both (2, 1), the type of shape 2 is (1, 3), and the type of shape 4 is (1, 1). The type of the following shape
+-- is (3, 2).
+--
+-- The abstract syntax of the shape language is given by the following Elm type.
+--         type Shape = X | TD Shape Shape | LR Shape Shape
+-- We define the type of a shape to be the pair of integers giving the width and height of its bounding box.
+--          type alias BBox = (Int,Int)
+--
+type Shape = X | TD Shape Shape | LR Shape Shape 
+type alias BBox = (Int, Int)
+
+-- A type can be understood as a characterization of values, summarizing a set of values at a higher level, abstracting
+-- away from some details and mapping value properties to a coarser description on the type level. In this sense, a
+-- bounding box can be considered as a type of shapes. The bounding box classifies shapes into different bounding box
+-- types. (The bounding box type information could be used to restrict, for example, the composition of shapes, such as
+-- applying TD only to shapes of the same width, although we won’t pursue this idea any further in this exercise.)
+--
+-- a) Define a type checker for the shape language as an Elm function with the following type
+--        bbox : Shape -> BBox
+--
+--bbox : Shape -> BBox
+--bbox 
+
+-- b) Rectangles are a subset of shapes and thus describe a more restricted set of types. By restricting the application
+-- of the TD and LR operations to rectangles only one could ensure that only convex shapes without holes can
+-- be constructed. Define a type checker for the shape language that assigns types only to rectangular shapes by
+-- defining the following Elm function.
+--          rect : Shape -> Maybe BBox
+
+
+
