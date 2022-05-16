@@ -127,4 +127,9 @@ rankP xs = rank xs 0
 -- semProg, and why is it safe to use this new type? (You do not have to give a new definition of the function; you
 -- can use the definition semOp _ _ = Debug.todo "Error" to get your file to compile.)
 
+semTC : Prog -> Maybe Stack
+semTC prog = if (rankP prog) /= Nothing then Just (semProg prog [])
+    else Nothing
+
+
 -- Exercise 2. A Rank-Based Type Systems for the Stack Language
