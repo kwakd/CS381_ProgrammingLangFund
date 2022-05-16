@@ -108,8 +108,8 @@ rank prog r = case prog of
 
     x::xs -> 
         let
-            (subs, adds) = rankC x --(2,1)
-            under = r - subs --0
+            (subs, adds) = rankC x
+            under = r - subs
         in 
             if under >= 0 then rank xs (under + adds)
             else Nothing
