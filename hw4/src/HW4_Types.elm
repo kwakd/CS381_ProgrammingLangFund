@@ -105,15 +105,14 @@ rank : Prog -> Rank -> Maybe Rank
 rank prog r = case prog of
     [] -> if r >= 0 then Just r
         else Nothing
+
     x::xs -> 
         let
-            (subs, adds) = rankC x
-            under = r - subs
+            (subs, adds) = rankC x --(2,1)
+            under = r - subs --0
         in 
             if under >= 0 then rank xs (under + adds)
             else Nothing
-
-    --_ -> Nothing
 
 rankP : Prog -> Maybe Rank
 rankP xs = rank xs 0
@@ -128,8 +127,23 @@ rankP xs = rank xs 0
 -- can use the definition semOp _ _ = Debug.todo "Error" to get your file to compile.)
 
 semTC : Prog -> Maybe Stack
-semTC prog = if (rankP prog) /= Nothing then Just (semProg prog [])
+semTC prog = if (rankP prog) /= Nothing then Just (semProg prog ([]))
     else Nothing
+-- semTC 1bTest_
 
+bTest1 = [LD 5, LD 2] -- Just [2,5]
+bTest2 = [LD 5, LD 2, ADD] -- Just [7]
+bTest3 = [LD 5, LD 2, MULT] -- Just [10]
+bTest4 = [LD 5, LD 2, DUP] -- Just [2, 2, 5]
+bTest5 = [LD 5, LD 2, DEC] -- Just [1,5]
+bTest6 = [LD 5, LD 2, SWAP] -- Just [5,2]
+bTest7 = [LD 5, LD 2, POP 1] -- Just [5]
+bTest8 = [LD 5, LD 2, POP 2] -- Just []
+
+bTest9 = [LD 5, DUP, ADD, LD 2, SWAP] -- Just [10, 2]
+bTest10 = [LD 5, POP 1, LD 4, DUP, POP 2, LD 2] -- Just [2]
+
+bTest11 = [POP 1] -- NOTHING
+bTest12 = [DUP] -- NOTHING
 
 -- Exercise 2. A Rank-Based Type Systems for the Stack Language
