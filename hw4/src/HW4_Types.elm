@@ -4,9 +4,6 @@ module HW4_Types exposing (..)
 ----------------------------------------
 -- SPRING 2022
 ----------------------------------------
--- Fatimah Alsalman  
--- Travis Hudson 
--- Manju Kuah
 -- David Kwak
 ----------------------------------------
 
@@ -181,14 +178,52 @@ type alias BBox = (Int, Int)
 -- a) Define a type checker for the shape language as an Elm function with the following type
 --        bbox : Shape -> BBox
 --
---bbox : Shape -> BBox
---bbox 
+bbox : Shape -> BBox
+bbox shape = case shape of
+    X -> (1,1)
+
+    TD s1 s2 ->
+        let
+            (s1x, s1y) = bbox s1
+            (s2x, s2y) = bbox s2
+        in
+            if s1x >= s2x then (s1x, s1y + s2y)
+            else (s2x, s1y + s2y)
+
+    LR s1 s2 -> 
+        let
+            (s1x, s1y) = bbox s1
+            (s2x, s2y) = bbox s2
+        in
+            if s1y >= s2y then (s1x + s2x, s1y)
+            else (s1x + s2x, s2y)
 
 -- b) Rectangles are a subset of shapes and thus describe a more restricted set of types. By restricting the application
 -- of the TD and LR operations to rectangles only one could ensure that only convex shapes without holes can
 -- be constructed. Define a type checker for the shape language that assigns types only to rectangular shapes by
 -- defining the following Elm function.
 --          rect : Shape -> Maybe BBox
+rect : Shape -> Maybe BBox
+rect shape = case Just(shape) of
+    Just X -> Just (1,1)
+
+    Just (TD s1 s2) -> 
+        let
+            (Just(s1x, s1y)) = (rect s1)
+            (Just(s2x, s2y)) = (rect s2)
+        in
+            if Just s1x == Just s2x then Just(s1x, s1y + s2y)
+            else Nothing
+
+    _ -> Nothing
+
+    -- LR s1 s2 -> 
+    --     let
+    --         (Just(s1x, s1y)) = (rect s1)
+    --         (Just(s2x, s2y)) = (rect s2)
+    --     in
+    --         if Just s1y == Just s2y then Just(s1x + s2x, s1y)
+    --         else Nothing
 
 
 
