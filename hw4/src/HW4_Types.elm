@@ -4,6 +4,9 @@ module HW4_Types exposing (..)
 ----------------------------------------
 -- SPRING 2022
 ----------------------------------------
+-- Fatimah Alsalman  
+-- Travis Hudson 
+-- Manju Kuah
 -- David Kwak
 ----------------------------------------
 
