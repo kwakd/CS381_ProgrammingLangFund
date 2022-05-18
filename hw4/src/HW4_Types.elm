@@ -203,6 +203,8 @@ bbox shape = case shape of
 -- be constructed. Define a type checker for the shape language that assigns types only to rectangular shapes by
 -- defining the following Elm function.
 --          rect : Shape -> Maybe BBox
+
+{--
 rect : Shape -> Maybe BBox
 rect shape = case Just(shape) of
     Just X -> Just (1,1)
@@ -224,6 +226,25 @@ rect shape = case Just(shape) of
     --     in
     --         if Just s1y == Just s2y then Just(s1x + s2x, s1y)
     --         else Nothing
+ --}
+ 
+rect: Shape -> Maybe BBox
+rect s = case s of
+    X -> Just (1,1)
+    TD s1 s2 ->
+        case (rect s1) of
+            Nothing -> Nothing
+            Just (s1x, s1y) -> case (rect s2) of
+                            Nothing -> Nothing
+                            Just (s2x, s2y) -> if s1x == s2x then Just (s1x , s1y + s2y)
+                                else Nothing
+    LR s1 s2 -> 
+        case (rect s1) of
+            Nothing -> Nothing
+            Just (s1x, s1y) -> case (rect s2) of
+                            Nothing -> Nothing
+                            Just (s2x, s2y) -> if s1y == s2y then Just (s1x + s2x , s1y)
+                                else Nothing
 
 
 
